@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ink.zhiyi.hello.mapper.ComicMapper">
+    <insert id="insertComic" parameterType="ink.zhiyi.hello.domain.Comic">
+        insert into Comic(id,`name`,author,cover,kind,`desc`) values(#{id},#{name},#{author},#{cover},#{kind},#{desc})
+    </insert>
+    <insert id="insertChapter" parameterType="ink.zhiyi.hello.domain.Chapter">
+        insert into Chapter(id,`name`,url,cid) values(#{id},#{name},#{url},#{cid})
+    </insert>
+    <insert id="insertPage" parameterType="ink.zhiyi.hello.domain.Page">
+        insert into Page(cid,purl,`name`) values(#{cid},#{purl},#{name})
+    </insert>
+
+<!--    查询-->
+    <select id="getAllComic" resultType="ink.zhiyi.hello.domain.Comic">
+        select *
+        from Comic
+    </select>
+
+    <select id="getChapterIdByName" >
+        select cid
+        from Chapter
+        where name = #{name}
+    </select>
+
+
+    <resultMap id="comicChapter" type="ink.zhiyi.hello.domain.Comic">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="cover" column="cover"></result>
+        <result property="author" column="author"></result>
+        <result property="desc" column="desc"></result>
+        <!-- chapters-->
+        <collection property="chapters" column="id" select="ink.zhiyi.hello.mapper.ComicMapper.getAllChaptersById">
+        </collection>
+    </resultMap>
+    <select id="getAllChaptersById" resultType="ink.zhiyi.hello.domain.Chapter">
+        select *
+        from Chapter
+        where id = #{id};
+    </select>
+
+    <select id="getOneComic" resultMap="comicChapter">
+        select id,name,cover,author,`desc`
+        from Comic
+        where id = #{id};
+    </select>
+
+    <select id="getPages" resultType="ink.zhiyi.hello.domain.Page">
+        select *
+        from Page
+        where cid = #{id};
+    </select>
+
+
+
+
+<!--    删除-->
+    <delete id="delectAllComic">
+        SET FOREIGN_KEY_CHECKS = 0
+        TRUNCATE TABLE Comic
+        SET FOREIGN_KEY_CHECKS = 1
+    </delete>
+    <delete id="delectAllPage">
+        SET FOREIGN_KEY_CHECKS = 0
+        TRUNCATE TABLE Page
+        SET FOREIGN_KEY_CHECKS = 1
+    </delete>
+    <delete id="delectAllChapter">
+        SET FOREIGN_KEY_CHECKS = 0
+        TRUNCATE TABLE Chapter
+        SET FOREIGN_KEY_CHECKS = 1
+    </delete>
+
+</mapper>
